@@ -157,8 +157,8 @@ input[type=number] {
 #timer {
     color: var(--light-gray);
     margin: 0px;
-    font-size: 190px;
-    font-family: sans;
+    font-size: 10rem;
+    font-family: Arial, sans-serif;
     text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
 }
 
@@ -219,7 +219,7 @@ input[type=number] {
 }
 
 #infoButton {
-    background-color: var(--background);
+    background-color: transparent;
     color: var(--light-red);
 }
 
