@@ -124,7 +124,6 @@ input[type=number] {
 
 #timer-box {
     width: 900px;
-    height: 500px;
     background-color: var(--light-red);
     border-radius: 10px;
     margin-bottom: 200px;
@@ -146,7 +145,6 @@ input[type=number] {
 
 #timer-bg {
     width: 800px;
-    height: 260px;
     background-color: var(--dark-red);
     border-radius: 10px;
     margin: 0px 50px;
