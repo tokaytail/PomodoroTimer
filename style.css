@@ -88,6 +88,8 @@ body>header {
 
 .input-wrapper label {
     margin-right: 5px;
+    width: 100px;
+    display: inline-block;
 }
 
 /* Chrome, Safari, Edge, Opera */
