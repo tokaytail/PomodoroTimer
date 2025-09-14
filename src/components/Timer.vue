@@ -1,19 +1,20 @@
 <script setup>
-import { isComputedPropertyName } from 'typescript';
+import { ref, computed, onMounted, onUnmounted, provide, watch } from 'vue';
+import SettingsModal from './SettingsModal.vue';
 import Logo from '../assets/geckodoro_logo.svg'
-import { ref, computed, onMounted, onUnmounted, resolveDynamicComponent } from 'vue';
-import { Input } from 'postcss';
 
 const FOCUS = "focus";
 const BREAK = "break";
 
 const stage = ref(FOCUS);
 const focusDurationInMinutes = ref(25);
-const breakDurantionInMinutes = ref(5);
+const breakDurationInMinutes = ref(5);
 const timerState = ref(null);
 const currentStageInSeconds = ref(0);
 const totalSessions = ref(4);
 const currentSession = ref(1);
+const isSettingsModalOpen = ref(false);
+const isDarkMode = ref(document.documentElement.classList.contains("dark"));
 
 // TODO: end session audio on/off option
 // const endSessionAudio = new Audio('path_to_the_audio');
@@ -47,7 +48,7 @@ function setTimer() {
   if (stage.value === FOCUS) {
     currentStageInSeconds.value = focusDurationInMinutes.value * 60;
   }
-  else currentStageInSeconds.value = breakDurantionInMinutes.value * 60;
+  else currentStageInSeconds.value = breakDurationInMinutes.value * 60;
 }
 
 function updateTimer() {
@@ -99,19 +100,12 @@ function resetTimer() {
 }
 
 function openSettings() {
-  alert("Aqui você abriria um modal para alterar 'focusDurationInMinutes' e 'breakDurationInMinutes'. Como eles são 'refs', qualquer mudança neles será refletida automaticamente.");
+  isSettingsModalOpen.value = !isSettingsModalOpen.value;
+  if (isSettingsModalOpen.value) pauseTimer();
 }
 
 function toggleTheme() {
-  const isDark = document.documentElement.classList.contains("dark");
-
-  if (isDark) {
-    document.documentElement.classList.remove("dark");
-    localStorage.theme = "light";
-  } else {
-    document.documentElement.classList.add("dark");
-    localStorage.theme = "dark";
-  }
+  isDarkMode.value = !isDarkMode.value;
 }
 
 function handleKeydown(event) {
@@ -130,8 +124,28 @@ function handleKeydown(event) {
     case 'S':
       openSettings();
       break;
+
+    case 't':
+    case 'T':
+      toggleTheme();
+      break;
   }
 }
+
+watch(isDarkMode, (isDark) => {
+  if (isDark) {
+    document.documentElement.classList.add("dark");
+    localStorage.theme = "dark";
+  } else {
+    document.documentElement.classList.remove("dark");
+    localStorage.theme = "light";
+  }
+})
+
+provide('focusDuration', focusDurationInMinutes);
+provide('breakDuration', breakDurationInMinutes);
+provide('totalSessions', totalSessions);
+provide('isDarkMode', isDarkMode);
 
 onMounted(() => {
   setTimer();
@@ -146,7 +160,7 @@ onUnmounted(() => {
 
 <template>
   <div id="timer-container" class="flex flex-col w-2/3 h-2/3 justify-center items-center gap-y-4">
-    <!-- <img :src="Logo" alt="Geckodoro Logo" class="w-3 2 h-32"> -->
+    <!-- <img :src="Logo" alt="Geckodoro Logo" class="w-32 h-32"> -->
 
     <div id="timer-session-ring" class="flex flex-col w-60 h-60 justify-center items-center rounded-full border-8 
     border-zinc-200
@@ -175,8 +189,8 @@ onUnmounted(() => {
         </span>
       </div>
 
-      <div id="timer-session-markers" class="flex flex-row w-10 h-1/8 justify-between items-center">
-        <div v-for="n in totalSessions" :key="n" class="w-1 h-5 rounded-md"
+      <div id="timer-session-markers" class="flex flex-row max-w-45 h-1/8 justify-between gap-1 items-center">
+        <div v-for="n in totalSessions" :key="n" class="w-1 min-w-1 h-5 rounded-md"
           :class="n <= currentSession ? 'bg-lime-400' : 'bg-zinc-200 dark:bg-zinc-800'"></div>
       </div>
 
@@ -200,7 +214,7 @@ onUnmounted(() => {
       </button>
       <button type="button" id="settings-button"
         class="w-10 h-10 rounded-full flex justify-center items-center border border-zinc-200 dark:border-zinc-800 cursor-pointer"
-        @click="toggleTheme">
+        @click="openSettings">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
           class="size-6">
           <path stroke-linecap="round" stroke-linejoin="round"
@@ -210,4 +224,7 @@ onUnmounted(() => {
       </button>
     </div>
   </div>
+
+  <SettingsModal v-if="isSettingsModalOpen" @close="openSettings">
+  </SettingsModal>
 </template>
