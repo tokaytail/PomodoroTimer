@@ -5,7 +5,7 @@
 ### Geckodoro
 General-purpose minimalist web-based timer built with Vue.js and TailwindCSS. 
 
-Live on: https://superlative-choux-fba1af.netlify.app/
+Live on: tokaytail.github.io/geckodoro/
 
 Developed by: [@tokaytail](https://github.com/tokaytail)
 </div>
